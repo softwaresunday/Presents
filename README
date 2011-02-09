@@ -1,2 +1,17 @@
 Presents is a map-based navigation/scavenger hunt Android application.
 Developed for the North Carolina Museum of Life + Science.
+
+
+To run the ant build
+
+1) The Android build.xml requires Ant 1.8! So change the ant home in Eclipse preferences (Ant - Runtime - Ant Home) (and install Ant 1.8 first if necessary)
+2) create a file "local.properties" with two properties that define the location of your local android sdk and apache.  
+This does not get checked into source control.  Mine looks like so:
+sdk.dir=/usr/local/android-sdk-mac_x86
+apache.dir=/path/to/apache/htdocs
+2) In Eclipse, right-click build.xml -> Run As - Ant Build...
+* check "Install"
+* Run (from then on you can just do Run As - Ant Build)
+-or-
+from the command line within the Touchv1 directory, run this command:
+ant install
