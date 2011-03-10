@@ -9,12 +9,17 @@ import android.graphics.PointF;
 import android.os.Bundle;
 import android.util.FloatMath;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 import android.os.Debug;
 import java.lang.Math;
+
 
 public class Presents extends Activity
 	implements OnTouchListener, AccelerometerListener {
@@ -36,13 +41,25 @@ public class Presents extends Activity
    private MediaPlayer affirm;
    private MediaPlayer deny;
    private static Context CONTEXT;
+   private static PopupWindow lpu = null;
+   LinearLayout layout;
 
+   private static TextView lpView; 
    // We can be in one of these 3 states
    static final int NONE = 0;
    static final int DRAG = 1;
    static final int ZOOM = 2;
    int mode = NONE;
-
+   
+   class DismissPopup implements Runnable {
+	   public void run() {
+	   if (lpu != null) { lpu.dismiss(); }
+	   }
+	   }
+ //how much time your popup window should appear
+   private static final int POPUP_DISMISS_DELAY = 2000;
+   private DismissPopup mDismissPopup = new DismissPopup();
+   
    // Remember some things for zooming
    PointF start = new PointF();
    PointF mid = new PointF();
@@ -63,6 +80,8 @@ public class Presents extends Activity
       view.setOnTouchListener(this);
       matrix.postTranslate(-xLoc,-yLoc);
       view.setImageMatrix(matrix);
+      lpView = new TextView(CONTEXT);
+      lpView.setTextAppearance(CONTEXT, R.style.MyDefaultTextAppearance);
    }
    protected void onResume() {
 	   super.onResume();
@@ -83,8 +102,9 @@ public class Presents extends Activity
    public boolean onTouch(View v, MotionEvent event) {
 	  
       ImageView view = (ImageView) v;
+      CharSequence pos; 
 
-
+      layout = new LinearLayout(this);
       // Handle touch events here...
       switch (event.getAction() & 0xFF) {
       case MotionEvent.ACTION_DOWN:
@@ -92,6 +112,12 @@ public class Presents extends Activity
          start.set(event.getX(), event.getY());
          Log.d(TAG, "mode=DRAG");
          mode = DRAG;
+         pos = new String("("+((int)(xLoc+event.getX()))+","+((int)(yLoc+event.getY()))+")");
+         lpView.setText(pos);
+         lpu = new PopupWindow(lpView,80,20);
+         lpu.showAtLocation(layout,Gravity.CENTER,-30,0);  
+         lpu.update(50,50,200,80);
+         
          break;
       case MotionEvent.ACTION_UP:
          mode = NONE;
@@ -100,7 +126,12 @@ public class Presents extends Activity
          yLoc -= tY;
          if (Math.abs(start.x-event.getX())<10 && Math.abs(start.y-event.getY())<10)
          {
-        	 onScan(v);
+        	 //onScan(v);
+         }
+         try { Thread.sleep(POPUP_DISMISS_DELAY);} catch (InterruptedException e) {}
+         if (lpu != null){
+        	 lpu.dismiss();
+        	 lpu = null;
          }
          break;
       case MotionEvent.ACTION_MOVE:
