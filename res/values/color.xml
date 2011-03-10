@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <color name="pageColor">#fff</color>
+    <color name="normalTextColor">#000</color>
+    <color name="listItemColor">#333</color>
+    <color name="goodColor">#009900</color>
+    <color name="badColor">#ff0000</color>
+</resources>
